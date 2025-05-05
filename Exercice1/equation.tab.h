@@ -54,7 +54,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 10 "equation.y"
+#line 13 "equation.y"
 
     int nb;
 

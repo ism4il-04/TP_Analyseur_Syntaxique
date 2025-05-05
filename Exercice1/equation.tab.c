@@ -72,14 +72,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>  
 #include <math.h>
 
-int yyerror(const char *message);
 int yylex(void);
+int yyerror(const char *message);
+
 
 
 /* Line 189 of yacc.c  */
-#line 83 "equation.tab.c"
+#line 86 "equation.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -121,14 +124,14 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 10 "equation.y"
+#line 13 "equation.y"
 
     int nb;
 
 
 
 /* Line 214 of yacc.c  */
-#line 132 "equation.tab.c"
+#line 135 "equation.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -140,7 +143,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 144 "equation.tab.c"
+#line 147 "equation.tab.c"
 
 #ifdef short
 # undef short
@@ -423,7 +426,7 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    22,    22
+       0,    25,    25
 };
 #endif
 
@@ -1324,23 +1327,23 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 22 "equation.y"
+#line 25 "equation.y"
     {
             int a = (yyvsp[(1) - (10)].nb);
             int b = (yyvsp[(6) - (10)].nb);
             int c = (yyvsp[(10) - (10)].nb);
 
-            printf("Equation: %dx^2+%dx+%d", a,b,c);
+            printf("Equation: %dx²+%dx+%d\n", a, b, c);
             float delta = b*b -4*a*c;
             if (delta > 0 ){
                 float x1 = (-b + sqrt(delta)) / (2*a);
                 float x2 = (-b - sqrt(delta)) / (2*a);
-                printf("l'equation admit deux solutions reelles : x1 = %.2f, x2 = %.2f\n", x1, x2);
+                printf("Deux solutions réelles : x1 = %.2f, x2 = %.2f\n", x1, x2);
             } else if (delta == 0) {
-                float x = -b / (2*a);
-                printf("l'equation admit une solution reelle : x = %.2f\n", x);
+                float x = -b / (2.0*a);
+                printf("Une solution réelle : x = %.2f\n", x);
             } else {
-                printf("l'equation n'admit pas de solution reelle");
+                printf("Pas de solution réelle\n");
             }
         ;}
     break;
@@ -1348,7 +1351,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1352 "equation.tab.c"
+#line 1355 "equation.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1560,14 +1563,43 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 42 "equation.y"
+#line 45 "equation.y"
+
+
+int yylex(void) {
+    int c;
+    while ((c = getchar()) != EOF) {
+        if (isspace(c)) continue;
+        if (isdigit(c)) {
+            ungetc(c, stdin);
+            int val;
+            scanf("%d", &val);
+            yylval.nb = val;
+            return NB;
+        }
+        if (c == 'X') return X;
+        if (c == '*') return MULT;
+        if (c == '+') return PLUS;
+        if (c == '^') {
+            c = getchar();
+            if (c == '2') return PUIS;
+            else {
+                fprintf(stderr, "Caractère inattendu après ^ : %c\n", c);
+                exit(1);
+            }
+        }
+        fprintf(stderr, "Caractère non reconnu : %c\n", c);
+        exit(1);
+    }
+    return 0; // fin du fichier
+}
 
 int main() {
-    printf("saisir une equation de second degre ecrite de la forme 'nb * X^2 + nb * X + nb': \n");
-    yyparse();
-    return 0;
+    return yyparse();
 }
 
-int yyerror(const char* message) {
-    printf("erreur %s", message);
+int yyerror(const char* msg) {
+    fprintf(stderr, "Erreur : %s\n", msg);
+    return 1;
 }
+
