@@ -1,11 +1,12 @@
+%option noyywrap
 %{
-#include "equation.tab.h" // Fichier généré par Bison
+#include "equation.tab.h"
 %}
 
 %%
 [0-9]+             { yylval.nb = atoi(yytext); return NB; }
 "X"                { return X; }
-"*"                { return MULt; }
+"*"                { return MULT; }
 "^2"               { return PUIS; }
 "+"                { return PLUS; }
 [ \t\n]+           
