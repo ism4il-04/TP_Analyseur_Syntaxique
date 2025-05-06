@@ -12,9 +12,9 @@ int yylex(void);
     int num;
 }
 
-%token BEGIN END WHILE DO OD READ
+%token deb fin WHILE DO OD READ WRITE
 %token INT ID NUM
-%token '<' '>' "<=" ">=" "==" "===" "!="
+%token ss si se ie aff dif eg egg
 %token pg pd
 %token '-' '*' '/' '^' ":=" '%'
 
@@ -22,21 +22,21 @@ int yylex(void);
 %left '*' '/' '%'
 %right '^'
 
-%start grammaire
-
 %type <num> NUM
 %type <id> ID
 
+%start grammaire
+
 %%
 
-grammaire   :   BEGIN listinstr END
+grammaire   :   deb listinstr fin  { printf("Programme valide.\n"); }
                 ;
 
 listinstr   :   instr listinstr 
                 | instr
                 ;
 instr       :   INT ID
-                | ID ':=' expr
+                | ID aff expr
                 | WRITE expr
                 | READ pg ID pd
                 | WHILE pg cond pd DO listinstr OD
@@ -54,13 +54,13 @@ expr        :   expr '-' expr
 
 cond        :   expr condsymb expr
 
-condsymb    :   ">"
-                | "<"
-                | ">="
-                | "<="
-                | "!="
-                | "=="
-                | "==="
+condsymb    :   ss
+                | si
+                | se
+                | ie
+                | dif
+                | eg
+                | egg
 
 %%
 
@@ -70,5 +70,9 @@ int yyerror(const char *msg) {
 }
 
 int main() {
-    return yyparse();
-}
+    if (yyparse() == 0) {
+        printf("Analyse syntaxique réussie.\n");
+    }
+    getchar(); // bloque l'écran pour lire les messages
+    return 0;
+    }
