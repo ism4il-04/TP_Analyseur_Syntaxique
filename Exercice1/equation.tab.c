@@ -111,9 +111,7 @@ int yyerror(const char *message);
    enum yytokentype {
      NB = 258,
      X = 259,
-     MULT = 260,
-     PUIS = 261,
-     PLUS = 262
+     PUIS = 260
    };
 #endif
 
@@ -131,7 +129,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 135 "equation.tab.c"
+#line 133 "equation.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -143,7 +141,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 147 "equation.tab.c"
+#line 145 "equation.tab.c"
 
 #ifdef short
 # undef short
@@ -371,7 +369,7 @@ union yyalloc
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   262
+#define YYMAXUTOK   260
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -383,7 +381,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     5,     7,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -405,7 +403,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7
+       6
 };
 
 #if YYDEBUG
@@ -435,7 +433,7 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "NB", "X", "MULT", "PUIS", "PLUS",
+  "$end", "error", "$undefined", "NB", "X", "'*'", "PUIS", "'+'",
   "$accept", "equation", 0
 };
 #endif
@@ -445,7 +443,7 @@ static const char *const yytname[] =
    token YYLEX-NUM.  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262
+       0,   256,   257,   258,   259,    42,   260,    43
 };
 # endif
 
@@ -1333,17 +1331,17 @@ yyreduce:
             int b = (yyvsp[(6) - (10)].nb);
             int c = (yyvsp[(10) - (10)].nb);
 
-            printf("Equation: %dx²+%dx+%d\n", a, b, c);
+            printf("Equation: %dx^2+%dx+%d\n", a, b, c);
             float delta = b*b -4*a*c;
             if (delta > 0 ){
                 float x1 = (-b + sqrt(delta)) / (2*a);
                 float x2 = (-b - sqrt(delta)) / (2*a);
-                printf("Deux solutions réelles : x1 = %.2f, x2 = %.2f\n", x1, x2);
+                printf("l'equation admit deux solutions reelles : x1 = %.2f, x2 = %.2f\n", x1, x2);
             } else if (delta == 0) {
                 float x = -b / (2.0*a);
-                printf("Une solution réelle : x = %.2f\n", x);
+                printf("l'equation admit une solution reelle : x = %.2f\n", x);
             } else {
-                printf("Pas de solution réelle\n");
+                printf("l'equation n'admit pas de solution reelle");
             }
         ;}
     break;
@@ -1351,7 +1349,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1355 "equation.tab.c"
+#line 1353 "equation.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1570,16 +1568,25 @@ int yylex(void) {
     int c;
     while ((c = getchar()) != EOF) {
         if (isspace(c)) continue;
-        if (isdigit(c)) {
+        if (isdigit(c) || c == '-') {
+            int sign = 1;
+            if (c == '-') {
+                sign = -1;
+                c = getchar();
+                if (!isdigit(c)) {
+                    fprintf(stderr, "Erreur : '-' non suivi d'un chiffre.\n");
+                    exit(1);
+                }
+            }
             ungetc(c, stdin);
             int val;
             scanf("%d", &val);
-            yylval.nb = val;
+            yylval.nb = sign * val;
             return NB;
         }
         if (c == 'X') return X;
-        if (c == '*') return MULT;
-        if (c == '+') return PLUS;
+        if (c == '*') return '*';
+        if (c == '+') return '+';
         if (c == '^') {
             c = getchar();
             if (c == '2') return PUIS;
@@ -1591,11 +1598,13 @@ int yylex(void) {
         fprintf(stderr, "Caractère non reconnu : %c\n", c);
         exit(1);
     }
-    return 0; // fin du fichier
+    return 0;
 }
 
 int main() {
-    return yyparse();
+    printf("saisir une equation de second degre ecrite de la forme 'nb * X^2 + nb * X + nb': \n");
+    yyparse();
+    return 0;
 }
 
 int yyerror(const char* msg) {

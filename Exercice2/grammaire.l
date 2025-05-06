@@ -34,13 +34,13 @@
 [a-zA-Z_][a-zA-Z0-9_]* {
     yylval.id = malloc(strlen(yytext) + 1);
     if (yylval.id == NULL) {
-        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        printf ("Erreur d'allocation de memoire\n");
         exit(1);
     }
     strcpy(yylval.id, yytext);
     return ID;
 }
 [ \t\n]+            ;  // ignorer espaces
-.                   { printf("Caractère non reconnu : %s\n", yytext); }
+.                   { printf("Caractere non reconnu : %s\n", yytext); }
 
 %%

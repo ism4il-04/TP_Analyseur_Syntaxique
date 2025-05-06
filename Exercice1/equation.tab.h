@@ -41,9 +41,7 @@
    enum yytokentype {
      NB = 258,
      X = 259,
-     MULT = 260,
-     PUIS = 261,
-     PLUS = 262
+     PUIS = 260
    };
 #endif
 
@@ -61,7 +59,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 65 "equation.tab.h"
+#line 63 "equation.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
