@@ -61,6 +61,7 @@ condsymb    :   ss
                 | dif
                 | eg
                 | egg
+                ;
 
 %%
 
