@@ -1333,7 +1333,9 @@ yyreduce:
 
             printf("Equation: %dx^2+%dx+%d\n", a, b, c);
             float delta = b*b -4*a*c;
-            if (delta > 0 ){
+            if (a == 0){
+                printf("ce n'est pas une equation de deuxieme degree.");
+            }else if (delta > 0 ){
                 float x1 = (-b + sqrt(delta)) / (2*a);
                 float x2 = (-b - sqrt(delta)) / (2*a);
                 printf("l'equation admit deux solutions reelles : x1 = %.2f, x2 = %.2f\n", x1, x2);
@@ -1349,7 +1351,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1353 "equation.tab.c"
+#line 1355 "equation.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1561,7 +1563,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 45 "equation.y"
+#line 47 "equation.y"
 
 
 int yylex(void) {
